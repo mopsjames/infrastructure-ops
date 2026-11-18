@@ -1,0 +1,23 @@
+[Unit]
+Description=Zabbix to Telegram alert relay (rate-limited)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/sbin/zabbix-telegram-relay
+# Edit: the chat to send to (from getUpdates, see README).
+Environment=TG_CHAT=REPLACE_WITH_CHAT_ID
+Environment=TG_MAX_PER_MINUTE=5
+# The bot token stays in a root-only file; systemd hands it to the service.
+LoadCredential=tg-token:/etc/zabbix-telegram-relay/bot-token
+Environment=TG_TOKEN_FILE=%d/tg-token
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
