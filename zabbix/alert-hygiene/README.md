@@ -23,7 +23,7 @@ Notes from tuning a homelab Zabbix 8.0 so that a phone notification means someth
 - Send only **Average and above** to your phone; Warning and Information stay on dashboards.
 - Turn off **update operations** on the action, or every acknowledgement sends a message.
 - A resolve should edit or answer the original message once, not arrive twice.
-- Cap the channel: see [zabbix-telegram-relay](../zabbix-telegram-relay/) for a rate-limited Telegram relay.
+- Cap the channel: see [telegram-relay](../telegram-relay/) for a rate-limited Telegram relay.
 
 ## Drive temperatures
 
