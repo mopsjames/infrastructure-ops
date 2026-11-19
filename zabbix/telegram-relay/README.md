@@ -48,7 +48,7 @@ Most floods are a few noisy triggers, not an outage:
 
    Give a user that media (any "send to" value) and add a trigger action: severity at least Average, with operations for problems and recoveries, no update operations.
 5. Test with a throwaway trapper item and trigger, then delete them.
-6. Monitor the relay itself. If it, the Zabbix server or the internet is down, nothing reaches Telegram, so keep a second channel or watch the dashboard.
+6. Monitor the relay itself. If it, the Zabbix server or the internet is down, nothing reaches Telegram, so keep a second channel or watch the dashboard. Give that check tolerance: alert on several minutes of failure, such as `max(/host/key,10m)=0 or nodata(/host/key,10m)=1`, not on `last()=0`, or every short Telegram or DNS blip pages you about a relay that catches up on its own.
 
 ## Tested
 
@@ -56,6 +56,6 @@ The cap, digest, flap and 429 logic were tested against a fake Telegram (12 aler
 
 ## Lessons from running it
 
-- **Hourly DNS-down alerts** turned out to be network discovery flooding the DNS server with reverse lookups until its per-subnet rate limit dropped everyone's queries, including the relay's lookup of `api.telegram.org`. Whitelisting the Zabbix server and running discovery less often fixed it.
+- **Hourly DNS-down alerts** turned out to be network discovery flooding the DNS server with reverse lookups until its per-subnet rate limit dropped everyone's queries, including the relay's lookup of `api.telegram.org`. Whitelisting the Zabbix server and running discovery less often stopped the DNS alerts, but the relay still misses a few lookups during each discovery run.
 - **Every resolve showed up twice** while recoveries were sent both as an edit and as a reply. Pick one.
-- **Telegram's API has its own blips** (502s and timeouts for a few minutes). The relay holds its queue and catches up; give its health check a few minutes before it pages.
+- **Telegram's API has its own blips** (502s and timeouts for 1 to 5 minutes, several times a week, while the internet link is fine). The relay holds its queue and catches up. A health check that alerted on one failed poll flapped 9 times in 4 days from these blips and the discovery DNS misses; requiring 10 minutes of failure would have silenced all of them.
